@@ -2,6 +2,8 @@ let circleSize = 200;
 let circleRadius = circleSize / 2;
 let bigCircleScale = 1;
 let smallCircleScale = 0.6;
+let gold;
+let seed;
 
 // Apple's coordinates 
 let bigcircleCenters = [
@@ -45,8 +47,10 @@ const canvasRatio = 2 / 3; // Make sure the canvas ratio is always 2:3
 function setup() {
   createCanvas(windowWidth, windowHeight);
   calculateCanvasSize();
-
-  noLoop();
+  //太阳的颜色和设置random seed
+  gold = lerpColor(color("gold"), color("lemonchiffon"), 0.7);
+  seed = floor(random(1000));
+  noiseSeed(seed);
 }
 
 
@@ -85,19 +89,32 @@ function scaledElement(inputElement) {
 
 
 function drawSun() {
-  // Draw the sun
+  push();
+  translate(width / 2, height * 0.12); // 将太阳移到画布中间上方
+  
+  // draw the solid center of the sun
   noStroke();
-  let numSuns = 8;
-  let sunCenterX = width / 2;
-  let sunCenterY = 0;
-
-  for (let i = 0; i < numSuns; i++) {
-    let sunSize = scaledElement(300 + i * 50);
-    let sunColor = color(245, 135, 26, 50);
-
-    fill(sunColor);
-    ellipse(sunCenterX, sunCenterY, sunSize * 2);
+  fill('yellow'); // choose the color for the sun's center
+  const sunDiameter = scaledElement(250); //set the size for the sun's center
+  ellipse(0, 0, sunDiameter); //draw the sun
+  
+  for (let i = 0; i < 5; i += 1) {
+    let direction = i % 2 === 0 ? -1 : 1;
+    push();
+    let noiseFactor = noise(frameCount * 0.01 * direction + i);
+    rotate((i / 5) * PI + noiseFactor * TWO_PI);
+    noFill();
+    const d = scaledElement(300 + i * 65); // 调整尺寸以适应屏幕
+    const a = 100 + 50 * noise(frameCount * 0.05 + i);
+    gold.setAlpha(a / 1.4);
+    stroke(gold);
+    strokeWeight(scaledElement(120)); // 调整光环宽度以适应屏幕
+    for (let j = 0; j < TWO_PI; j += PI / 3) {
+      arc(0, 0, d, d, j, j + PI / 6);
+    }
+    pop();
   }
+  pop();
 }
 
 
