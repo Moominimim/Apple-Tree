@@ -4,6 +4,7 @@ let bigCircleScale = 1;
 let smallCircleScale = 0.6;
 let gold;
 let seed;
+let zoff = 0;
 
 // Apple's coordinates 
 let bigcircleCenters = [
@@ -55,7 +56,24 @@ function setup() {
 
 
 function draw() {
-  background(243, 240, 231);
+  // 先绘制噪声云背景
+  background (220,70, 80);
+  colorMode(HSB);
+  let cloudColor = color(220,0,100);
+  let skyColor = color(220, 30, 90);
+  noiseDetail(8, 0.65);
+  
+  for (let x = 0; x < width; x += 5) {
+    for (let y = 0; y < height; y += 5) {
+
+      let n = noise(x * 0.005, y*0.005, zoff);
+      let inter = lerpColor(cloudColor, skyColor,n);
+      fill(inter);
+      rect(x, y, 10, 10);
+    }
+  }
+  colorMode(RGB);
+  zoff += 0.02;
 
   drawSun();
   drawBackgroundLines();
